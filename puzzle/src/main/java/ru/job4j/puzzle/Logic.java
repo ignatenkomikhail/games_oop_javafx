@@ -94,9 +94,11 @@ public class Logic {
         int[][] table = this.convert();
         boolean result = false;
         for (int i = 0; i < table.length; i++) {
-            if(this.isHorizontal(table, i) || this.isVertical(table, i)) {
-                result = true;
-                break;
+            if (table[i][i] == 1) {
+                if (this.isHorizontal(table, i) || this.isVertical(table, i)) {
+                    result = true;
+                    break;
+                }
             }
         }
         return result;
