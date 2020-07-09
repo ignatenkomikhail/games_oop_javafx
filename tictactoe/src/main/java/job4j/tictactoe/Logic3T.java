@@ -11,60 +11,37 @@ public class Logic3T {
         this.table = table;
     }
 
-    private boolean filledRows(Figure3T[][] table, Predicate<Figure3T> predicate) {
-        boolean rslt = false;
-        boolean row = true;
-        for (int i = 0; i < table.length; i++) {
-            for (int j = 0; j < table[i].length; j++) {
-                row &= predicate.test(table[i][j]);
-            }
-            if (row) {
-                rslt = true;
+    public boolean fillBy(Predicate<Figure3T> predicate, int startX, int startY, int deltaX, int deltaY) {
+        boolean result = true;
+        for (int index = 0; index != this.table.length; index++) {
+            Figure3T cell = this.table[startX][startY];
+            startX += deltaX;
+            startY += deltaY;
+            if (!predicate.test(cell)) {
+                result = false;
                 break;
             }
-            row = true;
         }
-        return rslt;
+        return result;
     }
 
-    private boolean filledCells(Figure3T[][] table, Predicate<Figure3T> predicate) {
-        boolean rslt = false;
-        boolean cell = true;
-        for (int i = 0; i < table.length; i++) {
-            for (int j = 0; j < table[i].length; j++) {
-                cell &= predicate.test(table[j][i]);
-            }
-            if (cell) {
-                rslt = true;
-                break;
-            }
-            cell = true;
-        }
-        return rslt;
-    }
-
-    private boolean filledDiagonals(Figure3T[][] table, Predicate<Figure3T> predicate) {
-        boolean diagA = true;
-        boolean diagB = true;
-        for (int i = 0; i < table.length; i++) {
-            diagA &= predicate.test(table[i][i]);
-            diagB &= predicate.test(table[table.length - 1 - i][i]);
-        }
-        return diagA || diagB;
-    }
-
-    private boolean completed(Figure3T[][] table, Predicate<Figure3T> predicate) {
-        return this.filledCells(table, predicate)
-                || this.filledDiagonals(table, predicate)
-                || this.filledRows(table, predicate);
+    public boolean isWin(Predicate<Figure3T> winCondition) {
+        return this.fillBy(winCondition, 0, 0, 1, 0)
+                || this.fillBy(winCondition, 0, 1, 1, 0)
+                || this.fillBy(winCondition, 0, 2, 1, 0)
+                || this.fillBy(winCondition, 0, 0, 0, 1)
+                || this.fillBy(winCondition, 1, 0, 0, 1)
+                || this.fillBy(winCondition, 2, 0, 0, 1)
+                || this.fillBy(winCondition, 0, 0, 1, 1)
+                || this.fillBy(winCondition, 2, 0, -1, 1);
     }
 
     public boolean isWinnerX() {
-        return this.completed(this.table, Figure3T::hasMarkX);
+        return isWin(Figure3T::hasMarkX);
     }
 
     public boolean isWinnerO() {
-        return this.completed(this.table, Figure3T::hasMarkO);
+        return isWin(Figure3T::hasMarkO);
     }
 
     public boolean hasGap() {
